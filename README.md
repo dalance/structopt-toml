@@ -1,5 +1,5 @@
 # structopt-toml
-An initial value loader from TOML for structopt.
+An default value loader from TOML for structopt.
 It combinates with [structopt](https://github.com/TeXitoi/structopt).
 
 [![Build Status](https://travis-ci.org/dalance/structopt-toml.svg?branch=master)](https://travis-ci.org/dalance/structopt-toml)
@@ -13,10 +13,9 @@ structopt-toml = "0.1.0"
 
 ## Example
 
-You should add `derive(Deserialize)`, `derive(StructOptToml)` and `serde(default)` to the struct with `derive(StructOpt)`.
-So, you can use functions like `from_args_with_toml` which load initial values from TOML string.
+If `derive(Deserialize)`, `derive(StructOptToml)` and `serde(default)` are added to the struct with `derive(StructOpt)`, some functions like `from_args_with_toml` can be used.
 
-```rust:example.rs
+```rust
 #[macro_use]
 extern crate serde_derive;
 #[macro_use]
@@ -37,7 +36,7 @@ struct Opt {
 
 fn main() {
     let toml_str = r#"
-    a = 10
+        a = 10
     "#;
     let opt = Opt::from_args_with_toml(toml_str);
     println!("a:{}", opt.a);

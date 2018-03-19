@@ -13,4 +13,5 @@ matrix:
 cache: cargo
 
 script:
-    - cargo test --verbose
+    - cargo test
+    - cargo run --example example

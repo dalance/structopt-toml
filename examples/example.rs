@@ -18,7 +18,7 @@ struct Opt {
 
 fn main() {
     let toml_str = r#"
-    a = 10
+        a = 10
     "#;
     let opt = Opt::from_args_with_toml(toml_str);
     println!("a:{}", opt.a);
