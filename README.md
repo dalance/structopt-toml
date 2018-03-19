@@ -3,6 +3,8 @@ An default value loader from TOML for structopt.
 It combinates with [structopt](https://github.com/TeXitoi/structopt).
 
 [![Build Status](https://travis-ci.org/dalance/structopt-toml.svg?branch=master)](https://travis-ci.org/dalance/structopt-toml)
+[![Crates.io](https://img.shields.io/crates/v/structopt-toml.svg)](https://crates.io/crates/structopt-toml)
+[![Docs.rs](https://docs.rs/structopt-toml/badge.svg)](https://docs.rs/structopt-toml)
 
 ## Usage
 

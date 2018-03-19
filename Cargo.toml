@@ -9,6 +9,9 @@ license = "MIT"
 readme = "README.md"
 description = "An default value loader from TOML for structopt"
 
+[badges]
+travis-ci = { repository = "dalance/structopt-toml" }
+
 [features]
 default = ["clap/default", "structopt/default"]
 
