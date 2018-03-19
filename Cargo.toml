@@ -25,6 +25,7 @@ structopt-toml-derive = { version = "0.1.1", path = "structopt-toml-derive" }
 
 [package.metadata.release]
 dev-version-ext            = "pre"
+pre-publish-hook           = ["sh", "-c", "if [ \"$DRY_RUN\" = \"false\" ]; then cd structopt-toml-derive; cargo publish; else echo \"cd structopt-toml-derive; cargo publish;\"; fi"]
 pre-release-commit-message = "Prepare to v{{version}}"
 pro-release-commit-message = "Start next development iteration v{{version}}"
 pre-release-replacements   = [
