@@ -46,7 +46,7 @@ fn test() {
         d3 = [133]
     "#;
     let args = vec!["test", "--a1", "201", "--a3", "203", "--b1", "211", "--b3", "213", "--c1", "221", "--c3", "223", "--d1", "231", "--d3", "233"];
-    let test: Test = StructOptToml::from_iter_with_toml(toml_str, args.iter());
+    let test = Test::from_iter_with_toml(toml_str, args.iter());
     assert_eq!(test.a0, 0);
     assert_eq!(test.a1, 201);
     assert_eq!(test.a2, 102);
