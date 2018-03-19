@@ -1,7 +1,13 @@
 [package]
-name    = "structopt-toml"
+name = "structopt-toml"
 version = "0.1.0"
 authors = ["dalance@gmail.com"]
+repository = "https://github.com/dalance/structopt"
+keywords = ["cli", "structopt", "clap", "derive"]
+categories = ["command-line-interface"]
+license = "MIT"
+readme = "README.md"
+description = "An default value loader from TOML for structopt"
 
 [features]
 default = ["clap/default", "structopt/default"]
