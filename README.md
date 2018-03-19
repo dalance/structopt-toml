@@ -10,7 +10,7 @@ It combinates with [structopt](https://github.com/TeXitoi/structopt).
 
 ```Cargo.toml
 [dependencies]
-structopt-toml = "0.1.1"
+structopt-toml = "0.1.2"
 ```
 
 ## Example
