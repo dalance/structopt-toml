@@ -6,7 +6,7 @@ repository = "https://github.com/dalance/structopt"
 keywords = ["cli", "structopt", "clap", "derive"]
 categories = ["command-line-interface"]
 license = "MIT"
-readme = "README.md"
+readme = "../README.md"
 description = "A derive crate of structopt-toml"
 
 [lib]
