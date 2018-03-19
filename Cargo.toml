@@ -27,9 +27,6 @@ structopt-toml-derive = { version = "0.1.0", path = "structopt-toml-derive" }
 dev-version-ext            = "pre"
 pre-release-commit-message = "Prepare to v{{version}}"
 pro-release-commit-message = "Start next development iteration v{{version}}"
-pre-release-replacements   = [
-    { file = "README.md", search = "structopt-toml = \"[a-z0-9\\.-]+\"", replace = "structopt-toml = \"{{version}}\"" },
-    { file = "Cargo.toml", search = "structopt-toml-derive = { version = \"[a-z0-9\\.-]+\"", replace = "structopt-toml-derive = { version = \"{{version}}\"" }
-]
+pre-release-replacements   = [ { file = "README.md", search = "structopt-toml = \"[a-z0-9\\.-]+\"", replace = "structopt-toml = \"{{version}}\"" }, { file = "Cargo.toml", search = "structopt-toml-derive = { version = \"[a-z0-9\\.-]+\"", replace = "structopt-toml-derive = { version = \"{{version}}\"" } ]
 tag-message                = "Bump version to {{version}}"
 tag-prefix                 = "v"
