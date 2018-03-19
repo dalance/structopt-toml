@@ -1,0 +1,11 @@
+[package]
+name = "structopt-toml-derive"
+version = "0.1.0"
+authors = ["dalance@gmail.com"]
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn   = "*"
+quote = "*"
