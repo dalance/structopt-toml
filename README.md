@@ -8,12 +8,15 @@ It combinates with [structopt](https://github.com/TeXitoi/structopt).
 
 ## Usage
 
-This crate must be used with `structopt`.
+This crate must be used with `serde`, `serde_derive`, `structopt`, and `toml` explicitly.
 
 ```Cargo.toml
 [dependencies]
+serde          = "1.0.33"
+serde_derive   = "1.0.33"
 structopt      = "0.2.5"
-structopt-toml = "0.2.2"
+structopt-toml = "0.2.1"
+toml           = "0.4.5"
 ```
 
 ## Example
