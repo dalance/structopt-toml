@@ -30,7 +30,7 @@
 //!     let toml_str = r#"
 //!         a = 10
 //!     "#;
-//!     let opt = Opt::from_args_with_toml(toml_str);
+//!     let opt = Opt::from_args_with_toml(toml_str).expect("toml parse failed");
 //!     println!("a:{}", opt.a);
 //!     println!("b:{}", opt.b);
 //! }
@@ -48,6 +48,8 @@
 //! b:0
 //! ```
 
+#[macro_use]
+extern crate error_chain;
 extern crate clap as _clap;
 extern crate serde as _serde;
 extern crate structopt as _structopt;
@@ -75,6 +77,12 @@ pub mod structopt {
     pub use _structopt::*;
 }
 
+error_chain! {
+    foreign_links {
+        Toml(::_toml::de::Error);
+    }
+}
+
 pub trait StructOptToml {
     /// Merge the struct from TOML and the struct from args
     fn merge<'a>(from_toml: Self, from_args: Self, args: &_clap::ArgMatches) -> Self
@@ -84,19 +92,19 @@ pub trait StructOptToml {
         Self: _serde::de::Deserialize<'a>;
 
     /// Creates the struct from `clap::ArgMatches` with initial values from TOML.
-    fn from_clap_with_toml<'a>(toml_str: &'a str, args: &_clap::ArgMatches) -> Self
+    fn from_clap_with_toml<'a>(toml_str: &'a str, args: &_clap::ArgMatches) -> Result<Self>
     where
         Self: Sized,
         Self: _structopt::StructOpt,
         Self: _serde::de::Deserialize<'a>,
     {
         let from_args: Self = _structopt::StructOpt::from_clap(&args);
-        let from_toml: Self = _toml::from_str(toml_str).unwrap();
-        Self::merge(from_toml, from_args, &args)
+        let from_toml: Self = _toml::from_str(toml_str)?;
+        Ok(Self::merge(from_toml, from_args, &args))
     }
 
     /// Creates the struct from command line arguments with initial values from TOML.
-    fn from_args_with_toml<'a>(toml_str: &'a str) -> Self
+    fn from_args_with_toml<'a>(toml_str: &'a str) -> Result<Self>
     where
         Self: Sized,
         Self: _structopt::StructOpt,
@@ -108,7 +116,7 @@ pub trait StructOptToml {
     }
 
     /// Creates the struct from iterator with initial values from TOML.
-    fn from_iter_with_toml<'a, I>(toml_str: &'a str, iter: I) -> Self
+    fn from_iter_with_toml<'a, I>(toml_str: &'a str, iter: I) -> Result<Self>
     where
         Self: Sized,
         Self: _structopt::StructOpt,

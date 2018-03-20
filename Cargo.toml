@@ -17,6 +17,7 @@ default = ["clap/default", "structopt/default"]
 
 [dependencies]
 clap                  = { version = "2.31.1", default-features = false }
+error-chain           = "0.11.0"
 toml                  = "0.4.5"
 serde                 = "1.0.33"
 serde_derive          = "1.0.33"

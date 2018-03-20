@@ -46,7 +46,7 @@ fn test() {
         d3 = [133]
     "#;
     let args = vec!["test", "--a1", "201", "--a3", "203", "--b1", "211", "--b3", "213", "--c1", "221", "--c3", "223", "--d1", "231", "--d3", "233"];
-    let test = Test::from_iter_with_toml(toml_str, args.iter());
+    let test = Test::from_iter_with_toml(toml_str, args.iter()).unwrap();
     assert_eq!(test.a0, 0);
     assert_eq!(test.a1, 201);
     assert_eq!(test.a2, 102);
@@ -63,4 +63,20 @@ fn test() {
     assert_eq!(test.d1, vec![231]);
     assert_eq!(test.d2, vec![132]);
     assert_eq!(test.d3, vec![233]);
+}
+
+#[test]
+fn test_toml_failed() {
+    let toml_str = r#"
+        a2 = "aaa"
+        a3 = [102]
+        c3 = 123
+        d2 = 132
+    "#;
+    let args = vec!["test"];
+    let test = Test::from_iter_with_toml(toml_str, args.iter());
+    match test {
+        Err( _ ) => assert!(true),
+        _ => assert!(false),
+    }
 }

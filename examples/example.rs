@@ -20,7 +20,7 @@ fn main() {
     let toml_str = r#"
         a = 10
     "#;
-    let opt = Opt::from_args_with_toml(toml_str);
+    let opt = Opt::from_args_with_toml(toml_str).expect("toml parse failed");
     println!("a:{}", opt.a);
     println!("b:{}", opt.b);
 }
