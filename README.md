@@ -13,7 +13,7 @@ This crate must be used with `structopt`.
 ```Cargo.toml
 [dependencies]
 structopt      = "0.2.5"
-structopt-toml = "0.2.1"
+structopt-toml = "0.2.2"
 ```
 
 ## Example
