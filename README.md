@@ -8,8 +8,11 @@ It combinates with [structopt](https://github.com/TeXitoi/structopt).
 
 ## Usage
 
+This crate must be used with `structopt`.
+
 ```Cargo.toml
 [dependencies]
+structopt      = "0.2.5"
 structopt-toml = "0.2.1"
 ```
 
