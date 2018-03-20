@@ -1,6 +1,6 @@
 [package]
 name = "structopt-toml"
-version = "0.2.4-pre"
+version = "0.2.4"
 authors = ["dalance@gmail.com"]
 repository = "https://github.com/dalance/structopt-toml"
 keywords = ["cli", "structopt", "clap", "derive"]
@@ -23,7 +23,7 @@ toml                  = "0.4.5"
 serde                 = "1.0.33"
 serde_derive          = "1.0.33"
 structopt             = { version = "0.2.5", default-features = false }
-structopt-toml-derive = { version = "0.2.3", path = "structopt-toml-derive" }
+structopt-toml-derive = { version = "0.2.4", path = "structopt-toml-derive" }
 
 [package.metadata.release]
 dev-version-ext            = "pre"
