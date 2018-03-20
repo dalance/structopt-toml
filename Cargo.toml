@@ -11,6 +11,7 @@ description = "An default value loader from TOML for structopt"
 
 [badges]
 travis-ci = { repository = "dalance/structopt-toml" }
+codecov   = { repository = "dalance/structopt-toml", branch = "master", service = "github" }
 
 [features]
 default = ["clap/default", "structopt/default"]
