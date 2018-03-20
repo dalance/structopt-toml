@@ -17,12 +17,14 @@ script:
     - cargo run --example example
 
 after_success: |
+    # Fix compiler internal error @ stable/beta rustc
     if [[ $TRAVIS_RUST_VERSION == "nightly" ]]; then
         bash <(curl https://raw.githubusercontent.com/xd009642/tarpaulin/master/travis-install.sh)
         # Uncomment the following line for coveralls.io
         # cargo tarpaulin --ciserver travis-ci --coveralls $TRAVIS_JOB_ID
 
         # Uncomment the following two lines create and upload a report for codecov.io
-        cargo tarpaulin --out Xml
+        # Fix cargo subcommand fail @ nightly cargo
+        cargo tarpaulin tarpaulin --out Xml
         bash <(curl -s https://codecov.io/bash)
     fi
