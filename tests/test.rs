@@ -31,6 +31,8 @@ struct Test {
     #[structopt(long = "d1")] d1: Vec<i32>,
     #[structopt(long = "d2")] d2: Vec<i32>,
     #[structopt(long = "d3")] d3: Vec<i32>,
+
+    #[structopt(long = "quiet")] quiet: bool,
 }
 
 #[test]
