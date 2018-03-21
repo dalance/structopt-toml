@@ -80,3 +80,34 @@ fn test_toml_failed() {
         _ => assert!(false),
     }
 }
+
+#[test]
+fn test_toml_args() {
+    let toml_str = r#"
+        a2 = 102
+        a3 = 103
+        b2 = 112
+        b3 = 113
+        c2 = 122
+        c3 = 123
+        d2 = [132]
+        d3 = [133]
+    "#;
+    let test = Test::from_args_with_toml(toml_str).unwrap();
+    assert_eq!(test.a0, 0);
+    assert_eq!(test.a1, 1);
+    assert_eq!(test.a2, 102);
+    assert_eq!(test.a3, 103);
+    assert_eq!(test.b0, 10);
+    assert_eq!(test.b1, 11);
+    assert_eq!(test.b2, 112);
+    assert_eq!(test.b3, 113);
+    assert_eq!(test.c0, None);
+    assert_eq!(test.c1, None);
+    assert_eq!(test.c2, Some(122));
+    assert_eq!(test.c3, Some(123));
+    assert_eq!(test.d0, vec![]);
+    assert_eq!(test.d1, vec![]);
+    assert_eq!(test.d2, vec![132]);
+    assert_eq!(test.d3, vec![133]);
+}
