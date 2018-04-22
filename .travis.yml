@@ -12,8 +12,6 @@ matrix:
         - rust: nightly
     fast_finish: true
 
-cache: cargo
-
 script:
     - cargo test
     - cargo run --example example
