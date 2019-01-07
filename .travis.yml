@@ -17,9 +17,8 @@ script:
     - cargo run --example example
 
 after_success: |
-    # Fix compiler internal error @ stable rustc
-    if [[ $TRAVIS_RUST_VERSION == "beta" ]]; then
-        bash <(curl https://raw.githubusercontent.com/xd009642/tarpaulin/master/travis-install.sh)
+    if [[ $TRAVIS_RUST_VERSION == "stable" ]]; then
+        RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-tarpaulin
         # Uncomment the following line for coveralls.io
         # cargo tarpaulin --ciserver travis-ci --coveralls $TRAVIS_JOB_ID
 

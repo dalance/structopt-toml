@@ -15,17 +15,17 @@
 //! #[macro_use]
 //! extern crate structopt_toml;
 //! extern crate toml;
-//! 
+//!
 //! use structopt::StructOpt;
 //! use structopt_toml::StructOptToml;
-//! 
+//!
 //! #[derive(Debug, Deserialize, StructOpt, StructOptToml)]
 //! #[serde(default)]
 //! struct Opt {
 //!     #[structopt(default_value = "0", short = "a")] a: i32,
 //!     #[structopt(default_value = "0", short = "b")] b: i32,
 //! }
-//! 
+//!
 //! fn main() {
 //!     let toml_str = r#"
 //!         a = 10
@@ -42,15 +42,15 @@
 //! $ ./example
 //! a:10        // value from TOML string
 //! b:0         // value from default_value of structopt
-//! 
+//!
 //! $ ./example -a 20
 //! a:20        // value from command line argument
 //! b:0
 //! ```
 
 #[macro_use]
-extern crate error_chain;
 extern crate clap as _clap;
+extern crate failure;
 extern crate serde as _serde;
 extern crate structopt as _structopt;
 extern crate toml as _toml;
@@ -77,12 +77,6 @@ pub mod structopt {
     pub use _structopt::*;
 }
 
-error_chain! {
-    foreign_links {
-        Toml(::_toml::de::Error);
-    }
-}
-
 pub trait StructOptToml {
     /// Merge the struct from TOML and the struct from args
     fn merge<'a>(from_toml: Self, from_args: Self, args: &_clap::ArgMatches) -> Self
@@ -92,7 +86,10 @@ pub trait StructOptToml {
         Self: _serde::de::Deserialize<'a>;
 
     /// Creates the struct from `clap::ArgMatches` with initial values from TOML.
-    fn from_clap_with_toml<'a>(toml_str: &'a str, args: &_clap::ArgMatches) -> Result<Self>
+    fn from_clap_with_toml<'a>(
+        toml_str: &'a str,
+        args: &_clap::ArgMatches,
+    ) -> Result<Self, failure::Error>
     where
         Self: Sized,
         Self: _structopt::StructOpt,
@@ -104,7 +101,7 @@ pub trait StructOptToml {
     }
 
     /// Creates the struct from command line arguments with initial values from TOML.
-    fn from_args_with_toml<'a>(toml_str: &'a str) -> Result<Self>
+    fn from_args_with_toml<'a>(toml_str: &'a str) -> Result<Self, failure::Error>
     where
         Self: Sized,
         Self: _structopt::StructOpt,
@@ -116,7 +113,7 @@ pub trait StructOptToml {
     }
 
     /// Creates the struct from iterator with initial values from TOML.
-    fn from_iter_with_toml<'a, I>(toml_str: &'a str, iter: I) -> Result<Self>
+    fn from_iter_with_toml<'a, I>(toml_str: &'a str, iter: I) -> Result<Self, failure::Error>
     where
         Self: Sized,
         Self: _structopt::StructOpt,
