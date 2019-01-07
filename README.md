@@ -16,7 +16,7 @@ This crate must be used with `serde`, `serde_derive`, `structopt`, and `toml` ex
 serde          = "1.0.33"
 serde_derive   = "1.0.33"
 structopt      = "0.2.5"
-structopt-toml = "0.3.0"
+structopt-toml = "0.4.0"
 toml           = "0.4.5"
 ```
 
