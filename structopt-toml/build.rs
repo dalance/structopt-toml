@@ -1,7 +1,5 @@
-#[cfg(test)]
 fn main() {
-    skeptic::generate_doc_tests(&["../README.md"]);
+    if cfg!(test) {
+        skeptic::generate_doc_tests(&["../README.md"]);
+    }
 }
-
-#[cfg(not(test))]
-fn main() {}
