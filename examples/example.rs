@@ -1,11 +1,4 @@
-#[macro_use]
-extern crate serde_derive;
-#[macro_use]
-extern crate structopt;
-#[macro_use]
-extern crate structopt_toml;
-extern crate toml;
-
+use serde_derive::Deserialize;
 use structopt::StructOpt;
 use structopt_toml::StructOptToml;
 

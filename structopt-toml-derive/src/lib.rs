@@ -6,7 +6,7 @@ extern crate quote;
 use proc_macro::TokenStream;
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
-use syn::{DataStruct, DeriveInput, Field, Ident, Lit, LitStr, Meta, MetaNameValue, NestedMeta};
+use syn::{DataStruct, DeriveInput, Field, Ident, LitStr, MetaNameValue};
 
 #[proc_macro_derive(StructOptToml, attributes(structopt))]
 pub fn structopt_toml(input: TokenStream) -> TokenStream {
@@ -59,9 +59,9 @@ fn impl_structopt_for_struct(
 }
 
 fn gen_merged_fields(fields: &Punctuated<Field, Comma>) -> proc_macro2::TokenStream {
-    use Lit::*;
-    use Meta::*;
-    use NestedMeta::*;
+    use syn::Lit::*;
+    use syn::Meta::*;
+    use syn::NestedMeta::*;
 
     let fields = fields.iter().map(|field| {
         let iter = field

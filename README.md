@@ -25,14 +25,7 @@ toml           = "0.5.6"
 If `derive(Deserialize)`, `derive(StructOptToml)` and `serde(default)` are added to the struct with `derive(StructOpt)`, some functions like `from_args_with_toml` can be used.
 
 ```rust
-#[macro_use]
-extern crate serde_derive;
-#[macro_use]
-extern crate structopt;
-#[macro_use]
-extern crate structopt_toml;
-extern crate toml;
-
+use serde_derive::Deserialize;
 use structopt::StructOpt;
 use structopt_toml::StructOptToml;
 

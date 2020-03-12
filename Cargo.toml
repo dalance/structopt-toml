@@ -9,6 +9,7 @@ license = "MIT OR Apache-2.0"
 readme = "README.md"
 description = "An default value loader from TOML for structopt"
 build = "build.rs"
+edition = "2018"
 
 [badges]
 travis-ci = { repository = "dalance/structopt-toml" }

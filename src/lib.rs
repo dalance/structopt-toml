@@ -48,7 +48,6 @@
 //! b:0
 //! ```
 
-#[macro_use]
 extern crate clap as _clap;
 extern crate failure;
 extern crate serde as _serde;
