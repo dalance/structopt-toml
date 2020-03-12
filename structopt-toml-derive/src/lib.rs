@@ -4,15 +4,15 @@ extern crate syn;
 extern crate quote;
 
 use proc_macro::TokenStream;
-use syn::{DataStruct, DeriveInput, Field, Ident, Lit, LitStr, Meta, MetaNameValue, NestedMeta};
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
+use syn::{DataStruct, DeriveInput, Field, Ident, Lit, LitStr, Meta, MetaNameValue, NestedMeta};
 
 #[proc_macro_derive(StructOptToml, attributes(structopt))]
 pub fn structopt_toml(input: TokenStream) -> TokenStream {
-  let input: DeriveInput = syn::parse(input).unwrap();
-  let gen = impl_structopt_toml(&input);
-  gen.into()
+    let input: DeriveInput = syn::parse(input).unwrap();
+    let gen = impl_structopt_toml(&input);
+    gen.into()
 }
 
 fn impl_structopt_toml(input: &DeriveInput) -> proc_macro2::TokenStream {
@@ -20,9 +20,11 @@ fn impl_structopt_toml(input: &DeriveInput) -> proc_macro2::TokenStream {
 
     let struct_name = &input.ident;
     let inner_impl = match input.data {
-        Struct(DataStruct { fields: syn::Fields::Named(ref fields), .. }) =>
-            impl_structopt_for_struct(struct_name, &fields.named),
-        _ => panic!("structopt_toml only supports non-tuple struct")
+        Struct(DataStruct {
+            fields: syn::Fields::Named(ref fields),
+            ..
+        }) => impl_structopt_for_struct(struct_name, &fields.named),
+        _ => panic!("structopt_toml only supports non-tuple struct"),
     };
 
     quote!(#inner_impl)
@@ -57,12 +59,14 @@ fn impl_structopt_for_struct(
 }
 
 fn gen_merged_fields(fields: &Punctuated<Field, Comma>) -> proc_macro2::TokenStream {
+    use Lit::*;
     use Meta::*;
     use NestedMeta::*;
-    use Lit::*;
 
     let fields = fields.iter().map(|field| {
-        let iter = field.attrs.iter()
+        let iter = field
+            .attrs
+            .iter()
             .filter_map(|attr| {
                 if attr.path.is_ident("structopt") {
                     let meta = attr
@@ -72,25 +76,32 @@ fn gen_merged_fields(fields: &Punctuated<Field, Comma>) -> proc_macro2::TokenStr
                 } else {
                     None
                 }
-            }).
-        flat_map(|m| match m {
-            List(l) => l.nested,
-            tokens => panic!("unsupported syntax: {}", quote!(#tokens).to_string()),
-        })
-        .map(|m| match m {
-            Meta(m) => m,
-            ref tokens => panic!("unsupported syntax: {}", quote!(#tokens).to_string()),
-        });
+            })
+            .flat_map(|m| match m {
+                List(l) => l.nested,
+                tokens => panic!("unsupported syntax: {}", quote!(#tokens).to_string()),
+            })
+            .map(|m| match m {
+                Meta(m) => m,
+                ref tokens => panic!("unsupported syntax: {}", quote!(#tokens).to_string()),
+            });
 
-        let mut structopt_name = LitStr::new(&format!("{}", field.ident.as_ref().unwrap().clone()), field.ident.as_ref().unwrap().span());
+        let mut structopt_name = LitStr::new(
+            &format!("{}", field.ident.as_ref().unwrap().clone()),
+            field.ident.as_ref().unwrap().span(),
+        );
         for attr in iter {
             match attr {
-                NameValue(MetaNameValue { path, lit: Str(value), .. }) => {
+                NameValue(MetaNameValue {
+                    path,
+                    lit: Str(value),
+                    ..
+                }) => {
                     if path.is_ident("name") {
                         structopt_name = value;
                     }
                 }
-                _ => ()
+                _ => (),
             }
         }
         let field_name = field.ident.as_ref().unwrap();

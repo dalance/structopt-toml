@@ -12,8 +12,10 @@ use structopt_toml::StructOptToml;
 #[derive(Debug, Deserialize, StructOpt, StructOptToml)]
 #[serde(default)]
 struct Opt {
-    #[structopt(default_value = "0", short = "a")] a: i32,
-    #[structopt(default_value = "0", short = "b")] b: i32,
+    #[structopt(default_value = "0", short = "a")]
+    a: i32,
+    #[structopt(default_value = "0", short = "b")]
+    b: i32,
 }
 
 fn main() {
