@@ -13,11 +13,11 @@ This crate must be used with `serde`, `serde_derive`, `structopt`, and `toml` ex
 
 ```Cargo.toml
 [dependencies]
-serde          = "1.0.33"
-serde_derive   = "1.0.33"
-structopt      = "0.2.5"
+serde          = "1.0.104"
+serde_derive   = "1.0.104"
+structopt      = "0.3.11"
 structopt-toml = "0.4.0"
-toml           = "0.4.5"
+toml           = "0.5.6"
 ```
 
 ## Example

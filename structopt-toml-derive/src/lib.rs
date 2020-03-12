@@ -15,7 +15,7 @@ pub fn structopt_toml(input: TokenStream) -> TokenStream {
   gen.into()
 }
 
-fn impl_structopt_toml(input: &DeriveInput) -> quote::Tokens {
+fn impl_structopt_toml(input: &DeriveInput) -> proc_macro2::TokenStream {
     use syn::Data::*;
 
     let struct_name = &input.ident;
@@ -31,7 +31,7 @@ fn impl_structopt_toml(input: &DeriveInput) -> quote::Tokens {
 fn impl_structopt_for_struct(
     name: &Ident,
     fields: &Punctuated<Field, Comma>,
-) -> quote::Tokens {
+) -> proc_macro2::TokenStream {
     let merged_fields = gen_merged_fields(fields);
 
     quote! {
@@ -56,7 +56,7 @@ fn impl_structopt_for_struct(
     }
 }
 
-fn gen_merged_fields(fields: &Punctuated<Field, Comma>) -> quote::Tokens {
+fn gen_merged_fields(fields: &Punctuated<Field, Comma>) -> proc_macro2::TokenStream {
     use Meta::*;
     use NestedMeta::*;
     use Lit::*;
@@ -64,13 +64,13 @@ fn gen_merged_fields(fields: &Punctuated<Field, Comma>) -> quote::Tokens {
     let fields = fields.iter().map(|field| {
         let iter = field.attrs.iter()
             .filter_map(|attr| {
-                let path = &attr.path;
-                match quote!(#path) == quote!(structopt) {
-                    true => Some(
-                        attr.interpret_meta()
-                        .expect(&format!("invalid structopt syntax: {}", quote!(attr)))
-                        ),
-                    false => None,
+                if attr.path.is_ident("structopt") {
+                    let meta = attr
+                        .parse_meta()
+                        .expect(&format!("invalid structopt syntax: {}", quote!(attr)));
+                    Some(meta)
+                } else {
+                    None
                 }
             }).
         flat_map(|m| match m {
@@ -82,11 +82,11 @@ fn gen_merged_fields(fields: &Punctuated<Field, Comma>) -> quote::Tokens {
             ref tokens => panic!("unsupported syntax: {}", quote!(#tokens).to_string()),
         });
 
-        let mut structopt_name = LitStr::new(&format!("{}", field.ident.unwrap().clone()), field.ident.unwrap().span);
+        let mut structopt_name = LitStr::new(&format!("{}", field.ident.as_ref().unwrap().clone()), field.ident.as_ref().unwrap().span());
         for attr in iter {
             match attr {
-                NameValue(MetaNameValue { ident, lit: Str(value), .. }) => {
-                    if ident == "name" {
+                NameValue(MetaNameValue { path, lit: Str(value), .. }) => {
+                    if path.is_ident("name") {
                         structopt_name = value;
                     }
                 }
