@@ -1,0 +1,39 @@
+[package]
+name = "structopt-toml"
+version = "0.4.0"
+authors = ["dalance@gmail.com"]
+repository = "https://github.com/dalance/structopt-toml"
+keywords = ["cli", "structopt", "clap", "derive"]
+categories = ["command-line-interface"]
+license = "MIT OR Apache-2.0"
+readme = "../README.md"
+description = "An default value loader from TOML for structopt"
+build = "build.rs"
+edition = "2018"
+
+[badges]
+travis-ci = { repository = "dalance/structopt-toml" }
+codecov   = { repository = "dalance/structopt-toml", branch = "master", service = "github" }
+
+[features]
+default = ["clap/default", "structopt/default"]
+
+[dependencies]
+clap                  = { version = "2.33.0", default-features = false }
+failure               = "0.1.7"
+toml                  = "0.5.6"
+serde                 = "1.0.104"
+serde_derive          = "1.0.104"
+structopt             = { version = "0.3.11", default-features = false }
+structopt-toml-derive = { version = "0.4.0", path = "../structopt-toml-derive" }
+
+[build-dependencies]
+skeptic = "0.13"
+
+[dev-dependencies]
+skeptic = "0.13"
+
+[package.metadata.release]
+pre-release-replacements = [
+    {file = "../README.md", search = "structopt-toml = \"[a-z0-9\\.-]+\"", replace = "structopt-toml = \"{{version}}\""},
+]

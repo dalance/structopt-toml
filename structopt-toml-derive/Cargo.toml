@@ -9,6 +9,9 @@ license = "MIT OR Apache-2.0"
 description = "A derive crate of structopt-toml"
 edition = "2018"
 
+[package.metadata.release]
+disable-tag = true
+
 [lib]
 proc-macro = true
 
