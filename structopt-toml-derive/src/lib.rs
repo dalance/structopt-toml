@@ -4,9 +4,12 @@ extern crate syn;
 extern crate quote;
 
 use proc_macro::TokenStream;
+use proc_macro2::TokenTree;
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
-use syn::{DataStruct, DeriveInput, Field, Ident, LitStr, MetaNameValue};
+use syn::parse::{ParseStream, Parse};
+use syn::{DataStruct, DeriveInput, Field, Ident, LitStr, buffer::Cursor};
+
 
 #[proc_macro_derive(StructOptToml, attributes(structopt))]
 pub fn structopt_toml(input: TokenStream) -> TokenStream {
@@ -59,52 +62,23 @@ fn impl_structopt_for_struct(
 }
 
 fn gen_merged_fields(fields: &Punctuated<Field, Comma>) -> proc_macro2::TokenStream {
-    use syn::Lit::*;
-    use syn::Meta::*;
-    use syn::NestedMeta::*;
-
     let fields = fields.iter().map(|field| {
-        let iter = field
+        let explicit_name = field
             .attrs
             .iter()
+            .filter(|&attr| attr.path.is_ident("structopt"))
             .filter_map(|attr| {
-                if attr.path.is_ident("structopt") {
-                    let meta = attr
-                        .parse_meta()
-                        .expect(&format!("invalid structopt syntax: {}", quote!(attr)));
-                    Some(meta)
-                } else {
-                    None
-                }
+                // extract parentheses 
+                let ts = attr.parse_args().ok()?;
+                // find name = `value` in attribute
+                syn::parse2::<NameVal>(ts).map(|nv| nv.0).ok()
             })
-            .flat_map(|m| match m {
-                List(l) => l.nested,
-                tokens => panic!("unsupported syntax: {}", quote!(#tokens).to_string()),
-            })
-            .map(|m| match m {
-                Meta(m) => m,
-                ref tokens => panic!("unsupported syntax: {}", quote!(#tokens).to_string()),
-            });
+            .nth(0);
 
-        let mut structopt_name = LitStr::new(
-            &format!("{}", field.ident.as_ref().unwrap().clone()),
-            field.ident.as_ref().unwrap().span(),
-        );
-        for attr in iter {
-            match attr {
-                NameValue(MetaNameValue {
-                    path,
-                    lit: Str(value),
-                    ..
-                }) => {
-                    if path.is_ident("name") {
-                        structopt_name = value;
-                    }
-                }
-                _ => (),
-            }
-        }
+        // by default the clap arg name is the field name, unless overwritten with `name=<value>`
         let field_name = field.ident.as_ref().unwrap();
+        let name_str = explicit_name.unwrap_or(format!("{}", field_name));
+        let structopt_name = LitStr::new(&name_str, field_name.span());
         quote!(
             #field_name: {
                 if args.is_present(#structopt_name) && args.occurrences_of(#structopt_name) > 0 {
@@ -118,4 +92,42 @@ fn gen_merged_fields(fields: &Punctuated<Field, Comma>) -> proc_macro2::TokenStr
     quote! (
         #( #fields ),*
     )
+}
+
+#[derive(Debug)]
+struct NameVal(String);
+
+impl Parse for NameVal {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        #[derive(PartialEq, Eq, Debug)]
+        enum Match {
+            NameToken,
+            PunctEq,
+            LitVal,
+        }
+        let mut state = Match::NameToken;
+        let result = input.step(|cursor| {
+            let mut rest = *cursor;
+            while let Some((tt, next)) = rest.token_tree() {
+                match tt {
+                    TokenTree::Ident(ident) if ident == "name" && state == Match::NameToken => {
+                        state = Match::PunctEq;
+                    }
+                    TokenTree::Punct(punct) if punct.as_char() == '=' && state == Match::PunctEq => {
+                        state = Match::LitVal;
+                    }
+                    TokenTree::Literal(lit) if state == Match::LitVal => {
+                        return Ok((lit.to_string().replace("\"", ""), Cursor::empty()));
+                    }
+                    _ => {
+                        // on first incorrect token reset
+                        state = Match::NameToken;
+                    }
+                }
+                rest = next;
+            }
+            Err(cursor.error("End reached"))
+        });
+        result.map(|lit| Self(lit)).map_err(|_| input.error("Not found"))
+    }
 }
