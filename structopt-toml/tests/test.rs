@@ -80,6 +80,28 @@ fn test() {
     assert_eq!(test.d3, vec![233]);
 }
 
+
+static POSSIBLE_VALUES: &[&str] = &["one", "two"];
+
+#[derive(Debug, Deserialize, StructOpt, StructOptToml)]
+#[serde(default)]
+struct Bar {
+    #[structopt(possible_values = POSSIBLE_VALUES, name = "bar")]
+    val: Option<String>,
+}
+
+#[test]
+fn test_args_with_other_attributes() {
+    let toml_str = r#"
+    bar = "one"
+    "#;
+    let test = Bar::from_args_with_toml(toml_str);
+    match dbg!(test) {
+        Err(_) => assert!(false),
+        _ => assert!(true),
+    }
+}
+
 #[test]
 fn test_toml_failed() {
     let toml_str = r#"
