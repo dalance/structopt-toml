@@ -63,36 +63,92 @@ fn impl_structopt_for_struct(
 
 fn gen_merged_fields(fields: &Punctuated<Field, Comma>) -> proc_macro2::TokenStream {
     let fields = fields.iter().map(|field| {
-        let explicit_name = field
-            .attrs
-            .iter()
-            .filter(|&attr| attr.path.is_ident("structopt"))
-            .filter_map(|attr| {
-                // extract parentheses 
-                let ts = attr.parse_args().ok()?;
-                // find name = `value` in attribute
-                syn::parse2::<NameVal>(ts).map(|nv| nv.0).ok()
-            })
-            .nth(0);
+        let explicit_name = load_explicit_name(field);
+
+        // If the field is decorated with `#[structopt(flatten)]` we have to treat it differently.
+        // We can't check its existence with `args.is_present` and `args.occurrences_of`
+        // and instead we delegate and call its own `StructOptToml` implementation of `merge`
+        let is_flatten = is_flatten(field);
 
         // by default the clap arg name is the field name, unless overwritten with `name=<value>`
         let field_name = field.ident.as_ref().unwrap();
+        let field_type = field.ty.clone();
         let name_str = explicit_name.unwrap_or(format!("{}", field_name));
         let structopt_name = LitStr::new(&name_str, field_name.span());
-        quote!(
-            #field_name: {
-                if args.is_present(#structopt_name) && args.occurrences_of(#structopt_name) > 0 {
-                    from_args.#field_name
-                } else {
-                    from_toml.#field_name
+        if is_flatten {
+            quote!(
+                #field_name: {
+                    <#field_type as ::structopt_toml::StructOptToml>::merge(
+                        from_toml.#field_name,
+                        from_args.#field_name,
+                        args
+                    )
                 }
-            }
-        )
+            )
+        } else {
+            quote!(
+                #field_name: {
+                    if args.is_present(#structopt_name) && args.occurrences_of(#structopt_name) > 0 {
+                        from_args.#field_name
+                    } else {
+                        from_toml.#field_name
+                    }
+                }
+            )
+        }
     });
     quote! (
         #( #fields ),*
     )
 }
+
+/// Loads the structopt name from the strcutopt attribute.
+/// i.e. from an attribute of the form `#[structopt(..., name = "some-name", ...)]`
+fn load_explicit_name(field: &Field) -> Option<String> {
+    field
+        .attrs
+        .iter()
+        .filter(|&attr| attr.path.is_ident("structopt"))
+        .filter_map(|attr| {
+            // extract parentheses
+            let ts = attr.parse_args().ok()?;
+            // find name = `value` in attribute
+            syn::parse2::<NameVal>(ts).map(|nv| nv.0).ok()
+        })
+        .nth(0)
+}
+
+/// Checks whether the attribute is marked as flattened
+/// i.e. `#[structopt(flatten)]`
+fn is_flatten(field: &Field) -> bool {
+    field
+        .attrs
+        .iter()
+        .filter(|&attr| attr.path.is_ident("structopt"))
+        .filter_map(|attr| attr.parse_meta().ok())
+        .map(|meta| {
+            let list = match meta {
+                syn::Meta::List(list) => list,
+                _ => return false,
+            };
+            let nested = match list.nested.first() {
+                Some(nested) => nested,
+                _ => return false,
+            };
+            let inner_meta = match nested {
+                syn::NestedMeta::Meta(inner_meta) => inner_meta,
+                _ => return false,
+            };
+            let path = match inner_meta {
+                syn::Meta::Path(path) => path,
+                _ => return false,
+            };
+            path.is_ident("flatten")
+        })
+        .nth(0)
+        .unwrap_or(false)
+}
+
 
 #[derive(Debug)]
 struct NameVal(String);

@@ -102,6 +102,37 @@ fn test_args_with_other_attributes() {
     }
 }
 
+#[derive(Debug, Deserialize, StructOpt, StructOptToml)]
+#[serde(default)]
+struct Outer {
+    #[structopt(long = "one", default_value = "1")]
+    one: u32,
+    #[structopt(flatten)]
+    two: Inner
+}
+
+#[derive(Debug, Deserialize, StructOpt, StructOptToml)]
+struct Inner {
+    #[structopt(long = "three", default_value = "1")]
+    three: u32,
+    #[structopt(long = "four", default_value = "1")]
+    four: u32,
+}
+
+#[test]
+fn test_flatten_args() {
+    let toml_str = r#"
+        one = 2
+        two.three = 2
+        two.four = 2
+    "#;
+    let args = vec!["test", "--four", "3"];
+    let test = Outer::from_iter_with_toml(toml_str, args.iter()).unwrap();
+    assert_eq!(test.one, 2);
+    assert_eq!(test.two.three, 2);
+    assert_eq!(test.two.four, 3);
+}
+
 #[test]
 fn test_toml_failed() {
     let toml_str = r#"
