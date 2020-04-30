@@ -2,7 +2,7 @@
 An default value loader from TOML for structopt.
 It combinates with [structopt](https://github.com/TeXitoi/structopt).
 
-[![Build Status](https://travis-ci.org/dalance/structopt-toml.svg?branch=master)](https://travis-ci.org/dalance/structopt-toml)
+[![Actions Status](https://github.com/dalance/structopt-toml/workflows/Rust/badge.svg)](https://github.com/dalance/structopt-toml/actions)
 [![Crates.io](https://img.shields.io/crates/v/structopt-toml.svg)](https://crates.io/crates/structopt-toml)
 [![Docs.rs](https://docs.rs/structopt-toml/badge.svg)](https://docs.rs/structopt-toml)
 [![codecov](https://codecov.io/gh/dalance/structopt-toml/branch/master/graph/badge.svg)](https://codecov.io/gh/dalance/structopt-toml)
