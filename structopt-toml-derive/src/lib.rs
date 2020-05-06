@@ -54,8 +54,7 @@ fn impl_structopt_for_struct(
 
         impl Default for #name {
             fn default() -> Self {
-                let args = vec!["bin"];
-                #name::from_iter(args.iter())
+                #name::from_args()
             }
         }
     }
