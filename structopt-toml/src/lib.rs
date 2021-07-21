@@ -19,14 +19,12 @@
 //!     #[structopt(default_value = "0", short = "b")] b: i32,
 //! }
 //!
-//! fn main() {
-//!     let toml_str = r#"
-//!         a = 10
-//!     "#;
-//!     let opt = Opt::from_args_with_toml(toml_str).expect("toml parse failed");
-//!     println!("a:{}", opt.a);
-//!     println!("b:{}", opt.b);
-//! }
+//! let toml_str = r#"
+//!     a = 10
+//! "#;
+//! let opt = Opt::from_args_with_toml(toml_str).expect("toml parse failed");
+//! println!("a:{}", opt.a);
+//! println!("b:{}", opt.b);
 //! ```
 //!
 //! The execution result of the above example is below.
@@ -87,9 +85,9 @@ pub trait StructOptToml {
         Self: _structopt::StructOpt,
         Self: _serde::de::Deserialize<'a>,
     {
-        let from_args: Self = _structopt::StructOpt::from_clap(&args);
+        let from_args: Self = _structopt::StructOpt::from_clap(args);
         let from_toml: Self = _toml::from_str(toml_str)?;
-        Ok(Self::merge(from_toml, from_args, &args))
+        Ok(Self::merge(from_toml, from_args, args))
     }
 
     /// Creates the struct from command line arguments with initial values from TOML.

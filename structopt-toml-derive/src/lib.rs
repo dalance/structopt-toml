@@ -113,7 +113,7 @@ fn load_explicit_name(field: &Field) -> Option<String> {
             // find name = `value` in attribute
             syn::parse2::<NameVal>(ts).map(|nv| nv.0).ok()
         })
-        .nth(0)
+        .next()
 }
 
 /// Checks whether the attribute is marked as flattened
@@ -143,7 +143,7 @@ fn is_flatten(field: &Field) -> bool {
             };
             path.is_ident("flatten")
         })
-        .nth(0)
+        .next()
         .unwrap_or(false)
 }
 
@@ -183,8 +183,6 @@ impl Parse for NameVal {
             }
             Err(cursor.error("End reached"))
         });
-        result
-            .map(|lit| Self(lit))
-            .map_err(|_| input.error("Not found"))
+        result.map(Self).map_err(|_| input.error("Not found"))
     }
 }
