@@ -80,7 +80,6 @@ fn test() {
     assert_eq!(test.d3, vec![233]);
 }
 
-
 static POSSIBLE_VALUES: &[&str] = &["one", "two"];
 
 #[derive(Debug, Deserialize, StructOpt, StructOptToml)]
@@ -108,7 +107,7 @@ struct Outer {
     #[structopt(long = "one", default_value = "1")]
     one: u32,
     #[structopt(flatten)]
-    two: Inner
+    two: Inner,
 }
 
 #[derive(Debug, Deserialize, StructOpt, StructOptToml)]

@@ -5,11 +5,10 @@ extern crate quote;
 
 use proc_macro::TokenStream;
 use proc_macro2::TokenTree;
+use syn::parse::{Parse, ParseStream};
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
-use syn::parse::{ParseStream, Parse};
-use syn::{DataStruct, DeriveInput, Field, Ident, LitStr, buffer::Cursor};
-
+use syn::{buffer::Cursor, DataStruct, DeriveInput, Field, Ident, LitStr};
 
 #[proc_macro_derive(StructOptToml, attributes(structopt))]
 pub fn structopt_toml(input: TokenStream) -> TokenStream {
@@ -148,7 +147,6 @@ fn is_flatten(field: &Field) -> bool {
         .unwrap_or(false)
 }
 
-
 #[derive(Debug)]
 struct NameVal(String);
 
@@ -168,7 +166,9 @@ impl Parse for NameVal {
                     TokenTree::Ident(ident) if ident == "name" && state == Match::NameToken => {
                         state = Match::PunctEq;
                     }
-                    TokenTree::Punct(punct) if punct.as_char() == '=' && state == Match::PunctEq => {
+                    TokenTree::Punct(punct)
+                        if punct.as_char() == '=' && state == Match::PunctEq =>
+                    {
                         state = Match::LitVal;
                     }
                     TokenTree::Literal(lit) if state == Match::LitVal => {
@@ -183,6 +183,8 @@ impl Parse for NameVal {
             }
             Err(cursor.error("End reached"))
         });
-        result.map(|lit| Self(lit)).map_err(|_| input.error("Not found"))
+        result
+            .map(|lit| Self(lit))
+            .map_err(|_| input.error("Not found"))
     }
 }
