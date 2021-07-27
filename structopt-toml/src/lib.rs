@@ -19,14 +19,12 @@
 //!     #[structopt(default_value = "0", short = "b")] b: i32,
 //! }
 //!
-//! fn main() {
-//!     let toml_str = r#"
-//!         a = 10
-//!     "#;
-//!     let opt = Opt::from_args_with_toml(toml_str).expect("toml parse failed");
-//!     println!("a:{}", opt.a);
-//!     println!("b:{}", opt.b);
-//! }
+//! let toml_str = r#"
+//!     a = 10
+//! "#;
+//! let opt = Opt::from_args_with_toml(toml_str).expect("toml parse failed");
+//! println!("a:{}", opt.a);
+//! println!("b:{}", opt.b);
 //! ```
 //!
 //! The execution result of the above example is below.
@@ -41,8 +39,8 @@
 //! b:0
 //! ```
 
+extern crate anyhow;
 extern crate clap as _clap;
-extern crate failure;
 extern crate serde as _serde;
 extern crate structopt as _structopt;
 extern crate toml as _toml;
@@ -81,19 +79,19 @@ pub trait StructOptToml {
     fn from_clap_with_toml<'a>(
         toml_str: &'a str,
         args: &_clap::ArgMatches,
-    ) -> Result<Self, failure::Error>
+    ) -> Result<Self, anyhow::Error>
     where
         Self: Sized,
         Self: _structopt::StructOpt,
         Self: _serde::de::Deserialize<'a>,
     {
-        let from_args: Self = _structopt::StructOpt::from_clap(&args);
+        let from_args: Self = _structopt::StructOpt::from_clap(args);
         let from_toml: Self = _toml::from_str(toml_str)?;
-        Ok(Self::merge(from_toml, from_args, &args))
+        Ok(Self::merge(from_toml, from_args, args))
     }
 
     /// Creates the struct from command line arguments with initial values from TOML.
-    fn from_args_with_toml<'a>(toml_str: &'a str) -> Result<Self, failure::Error>
+    fn from_args_with_toml<'a>(toml_str: &'a str) -> Result<Self, anyhow::Error>
     where
         Self: Sized,
         Self: _structopt::StructOpt,
@@ -105,7 +103,7 @@ pub trait StructOptToml {
     }
 
     /// Creates the struct from iterator with initial values from TOML.
-    fn from_iter_with_toml<'a, I>(toml_str: &'a str, iter: I) -> Result<Self, failure::Error>
+    fn from_iter_with_toml<'a, I>(toml_str: &'a str, iter: I) -> Result<Self, anyhow::Error>
     where
         Self: Sized,
         Self: _structopt::StructOpt,
