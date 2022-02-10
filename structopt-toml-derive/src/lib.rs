@@ -3,6 +3,7 @@ extern crate syn;
 #[macro_use]
 extern crate quote;
 
+use heck::ToKebabCase;
 use proc_macro::TokenStream;
 use proc_macro2::TokenTree;
 use syn::parse::{Parse, ParseStream};
@@ -68,10 +69,10 @@ fn gen_merged_fields(fields: &Punctuated<Field, Comma>) -> proc_macro2::TokenStr
         // and instead we delegate and call its own `StructOptToml` implementation of `merge`
         let is_flatten = is_flatten(field);
 
-        // by default the clap arg name is the field name, unless overwritten with `name=<value>`
+        // by default the clap arg name is the field name in kebab-case, unless overwritten with `name=<value>`
         let field_name = field.ident.as_ref().unwrap();
         let field_type = field.ty.clone();
-        let name_str = explicit_name.unwrap_or(format!("{}", field_name));
+        let name_str = explicit_name.unwrap_or_else(|| format!("{}", field_name).to_kebab_case());
         let structopt_name = LitStr::new(&name_str, field_name.span());
         if is_flatten {
             quote!(
