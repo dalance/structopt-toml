@@ -19,7 +19,7 @@ codecov   = { repository = "dalance/structopt-toml", branch = "master", service 
 default = ["clap/default", "structopt/default"]
 
 [dependencies]
-clap                  = { version = "2.33.0", default-features = false }
+clap                  = { version = "3.2.16", default-features = false }
 anyhow                = "1.0.42"
 toml                  = "0.5.6"
 serde                 = "1.0.104"
